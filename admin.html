@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة – جمعية نور</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Tajawal', sans-serif; background: #f4f7f4; color: #1a2e1a; direction: rtl; }
+
+/* LOGIN */
+.login-screen { position:fixed; inset:0; background:#f4f7f4; display:flex; align-items:center; justify-content:center; z-index:9999; }
+.login-box { background:#fff; border-radius:16px; padding:2.5rem 2rem; width:360px; box-shadow:0 8px 32px rgba(0,0,0,.10); text-align:center; }
+.login-icon { font-size:40px; margin-bottom:1rem; }
+.login-box h2 { font-size:20px; font-weight:800; color:#1a2e1a; margin-bottom:.4rem; }
+.login-box p { font-size:13px; color:#5a7260; margin-bottom:1.5rem; }
+.login-field { text-align:right; margin-bottom:1rem; }
+.login-field label { font-size:13px; font-weight:600; color:#3a4a3a; display:block; margin-bottom:5px; }
+.login-field input { width:100%; padding:10px 14px; border:1.5px solid #d8e8d8; border-radius:10px; font-family:'Tajawal',sans-serif; font-size:14px; outline:none; transition:.2s; }
+.login-field input:focus { border-color:#4caf50; }
+.login-btn { width:100%; background:linear-gradient(135deg,#4caf50,#2e7d32); color:#fff; border:none; border-radius:10px; padding:12px; font-size:15px; font-weight:700; font-family:'Tajawal',sans-serif; cursor:pointer; margin-top:.5rem; }
+.login-error { display:none; color:#e53935; font-size:13px; margin-top:10px; background:#ffebee; padding:8px; border-radius:8px; }
+
+/* LAYOUT */
+.sidebar { position:fixed; right:0; top:0; bottom:0; width:240px; background:#1a2e1a; display:flex; flex-direction:column; z-index:100; }
+.sidebar-logo { display:flex; align-items:center; gap:10px; padding:1.4rem 1.2rem; color:#fff; font-size:18px; font-weight:800; border-bottom:1px solid rgba(255,255,255,.08); }
+.sidebar-logo-icon { width:36px; height:36px; background:linear-gradient(135deg,#4caf50,#81c784); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.sidebar-nav { flex:1; padding:1rem 0; overflow-y:auto; }
+.sidebar-section { font-size:10px; font-weight:700; color:rgba(255,255,255,.35); letter-spacing:1px; padding:10px 16px 4px; text-transform:uppercase; }
+.sidebar-item { display:flex; align-items:center; gap:10px; padding:10px 16px; color:rgba(255,255,255,.7); font-size:14px; cursor:pointer; border-radius:0; transition:.15s; margin:2px 8px; border-radius:8px; }
+.sidebar-item:hover { background:rgba(255,255,255,.08); color:#fff; }
+.sidebar-item.active { background:rgba(76,175,80,.2); color:#81c784; font-weight:600; }
+.sidebar-item .icon { font-size:16px; }
+.sidebar-badge { margin-right:auto; background:#e53935; color:#fff; font-size:11px; font-weight:700; border-radius:99px; padding:1px 8px; }
+.sidebar-footer { padding:1rem; border-top:1px solid rgba(255,255,255,.08); }
+.sidebar-footer a { display:block; color:rgba(255,255,255,.5); font-size:13px; text-decoration:none; padding:6px 0; }
+.sidebar-footer a:hover { color:#fff; }
+.main { margin-right:240px; min-height:100vh; display:flex; flex-direction:column; }
+.topbar { background:#fff; border-bottom:1px solid #e8f0e8; padding:0 1.5rem; height:60px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+.topbar-title { font-size:17px; font-weight:800; }
+.topbar-actions { display:flex; align-items:center; gap:12px; }
+.topbar-search { display:flex; align-items:center; gap:8px; background:#f4f7f4; border-radius:10px; padding:7px 14px; }
+.topbar-search input { border:none; background:transparent; font-family:'Tajawal',sans-serif; font-size:14px; outline:none; width:180px; }
+.avatar { width:36px; height:36px; background:linear-gradient(135deg,#4caf50,#2e7d32); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:15px; }
+.content { flex:1; padding:1.5rem; }
+.view { display:none; }
+.view.active { display:block; }
+
+/* STATS */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
+.stat-card { background:#fff; border-radius:14px; padding:1.2rem; display:flex; align-items:center; gap:1rem; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.stat-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.stat-num { font-size:28px; font-weight:800; color:#1a2e1a; }
+.stat-label { font-size:12px; color:#5a7260; }
+
+/* TABLE CARD */
+.table-card { background:#fff; border-radius:14px; box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden; margin-bottom:1rem; }
+.table-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.2rem; border-bottom:1px solid #f0f5f0; flex-wrap:wrap; gap:.5rem; }
+.table-header h3 { font-size:15px; font-weight:700; }
+.table-filters { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+.filter-select { border:1.5px solid #e0eae0; border-radius:8px; padding:6px 10px; font-family:'Tajawal',sans-serif; font-size:13px; outline:none; }
+.btn-export { background:#e8f5e9; color:#2e7d32; border:none; border-radius:8px; padding:7px 14px; font-family:'Tajawal',sans-serif; font-size:13px; font-weight:600; cursor:pointer; }
+.btn-add { background:linear-gradient(135deg,#4caf50,#2e7d32); color:#fff; border:none; border-radius:8px; padding:7px 14px; font-family:'Tajawal',sans-serif; font-size:13px; font-weight:600; cursor:pointer; }
+
+table { width:100%; border-collapse:collapse; }
+th { background:#f8fbf8; padding:10px 14px; font-size:12px; font-weight:700; color:#5a7260; text-align:right; white-space:nowrap; }
+td { padding:10px 14px; border-bottom:1px solid #f4f7f4; font-size:13px; vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#fafcfa; cursor:pointer; }
+
+.td-name { display:flex; align-items:center; gap:8px; }
+.td-name-text strong { display:block; font-size:13px; font-weight:700; }
+.td-name-text span { font-size:11px; color:#5a7260; }
+
+.avatar-sm { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; flex-shrink:0; }
+
+.badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:99px; font-size:11px; font-weight:700; white-space:nowrap; }
+.badge-pending { background:#fff8e1; color:#f57c00; }
+.badge-confirmed { background:#e8f5e9; color:#2e7d32; }
+.badge-waitlist { background:#e3f2fd; color:#1565c0; }
+.badge-cancelled { background:#ffebee; color:#c62828; }
+.badge-type-1 { background:#e8f5e9; color:#2e7d32; }
+.badge-type-2 { background:#fff3e0; color:#e65100; }
+.badge-type-3 { background:#fce4ec; color:#880e4f; }
+.badge-type-other { background:#f3e5f5; color:#6a1b9a; }
+
+.action-btns { display:flex; gap:4px; }
+.btn-icon { width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; font-size:14px; background:#f4f7f4; display:flex; align-items:center; justify-content:center; transition:.15s; }
+.btn-icon:hover { transform:scale(1.1); }
+.btn-icon.wa { background:#e8f5e9; }
+.btn-icon.success { background:#e8f5e9; }
+.btn-icon.danger { background:#ffebee; }
+
+.pagination { display:flex; align-items:center; justify-content:space-between; padding:.8rem 1.2rem; border-top:1px solid #f0f5f0; font-size:13px; color:#5a7260; }
+.page-btns { display:flex; gap:4px; }
+.page-btn { width:30px; height:30px; border:1.5px solid #e0eae0; background:#fff; border-radius:8px; cursor:pointer; font-family:'Tajawal',sans-serif; font-size:13px; }
+.page-btn.active { background:#2e7d32; color:#fff; border-color:#2e7d32; }
+
+.empty-state { padding:2rem; text-align:center; color:#5a7260; }
+.empty-state .emoji { font-size:32px; display:block; margin-bottom:.5rem; }
+
+/* CHART */
+.chart-bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.chart-bar-label { font-size:12px; color:#3a4a3a; width:120px; text-align:right; flex-shrink:0; }
+.chart-bar-track { flex:1; height:10px; background:#f0f5f0; border-radius:99px; overflow:hidden; }
+.chart-bar-fill { height:100%; background:linear-gradient(90deg,#4caf50,#81c784); border-radius:99px; transition:width .4s; }
+.chart-bar-val { font-size:12px; font-weight:700; color:#2e7d32; width:24px; text-align:left; }
+
+/* DRAWER */
+.drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.3); z-index:200; display:none; }
+.drawer-overlay.open { display:block; }
+.drawer { position:fixed; left:0; top:0; bottom:0; width:380px; background:#fff; z-index:201; transform:translateX(-100%); transition:transform .3s; overflow-y:auto; }
+.drawer.open { transform:translateX(0); }
+.drawer-header { display:flex; align-items:center; justify-content:space-between; padding:1.2rem; border-bottom:1px solid #f0f5f0; position:sticky; top:0; background:#fff; z-index:1; }
+.drawer-header h3 { font-size:16px; font-weight:800; }
+.drawer-close { background:none; border:none; font-size:18px; cursor:pointer; color:#5a7260; }
+.drawer-body { padding:1rem 1.2rem; }
+.drawer-section { margin-bottom:1.2rem; }
+.drawer-section-title { font-size:11px; font-weight:700; color:#5a7260; letter-spacing:.5px; text-transform:uppercase; margin-bottom:.6rem; }
+.drawer-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid #f4f7f4; font-size:13px; }
+.drawer-row .key { color:#5a7260; }
+.drawer-row .val { font-weight:600; text-align:left; }
+.drawer-actions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:1rem; }
+.drawer-btn { border:none; border-radius:10px; padding:10px; font-family:'Tajawal',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.drawer-btn.confirm { background:#e8f5e9; color:#2e7d32; }
+.drawer-btn.waitlist { background:#e3f2fd; color:#1565c0; }
+.drawer-btn.wa { background:#dcfce7; color:#166534; }
+.drawer-btn.cancel { background:#ffebee; color:#c62828; }
+
+/* MODAL */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:300; display:none; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal-box { background:#fff; border-radius:16px; width:600px; max-width:95vw; max-height:90vh; overflow-y:auto; }
+.modal-head { display:flex; align-items:center; justify-content:space-between; padding:1.2rem 1.5rem; border-bottom:1px solid #f0f5f0; position:sticky; top:0; background:#fff; z-index:1; }
+.modal-head h3 { font-size:16px; font-weight:800; }
+.modal-close-btn { background:none; border:none; font-size:18px; cursor:pointer; color:#5a7260; }
+.modal-body { padding:1.5rem; }
+.modal-footer { display:flex; gap:10px; padding:1rem 1.5rem; border-top:1px solid #f0f5f0; justify-content:flex-end; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+.fg { display:flex; flex-direction:column; gap:5px; }
+.fg.full { grid-column:1/-1; }
+.fg label { font-size:12px; font-weight:600; color:#3a4a3a; }
+.fg label span { color:#e53935; }
+.fg input, .fg select, .fg textarea { padding:9px 12px; border:1.5px solid #e0eae0; border-radius:10px; font-family:'Tajawal',sans-serif; font-size:14px; outline:none; transition:.2s; }
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color:#4caf50; }
+.fg textarea { height:80px; resize:vertical; }
+.form-sep { grid-column:1/-1; font-size:11px; font-weight:700; color:#5a7260; letter-spacing:.5px; padding:8px 0 2px; border-top:1px solid #f0f5f0; margin-top:.5rem; }
+.btn-cancel-modal { background:#f4f7f4; color:#3a4a3a; border:none; border-radius:10px; padding:10px 20px; font-family:'Tajawal',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+.btn-save { background:linear-gradient(135deg,#4caf50,#2e7d32); color:#fff; border:none; border-radius:10px; padding:10px 24px; font-family:'Tajawal',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+
+/* TOAST */
+.toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(20px); background:#1a2e1a; color:#fff; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:600; opacity:0; transition:.3s; z-index:9999; pointer-events:none; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.toast.success { background:#2e7d32; }
+.toast.error { background:#c62828; }
+</style>
+</head>
+<body>
+
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <h2>لوحة إدارة جمعية نور</h2>
+    <p>أدخل بيانات الدخول للوصول إلى لوحة الإدارة</p>
+    <div class="login-field">
+      <label>اسم المستخدم</label>
+      <input type="text" id="loginUser" placeholder="admin">
+    </div>
+    <div class="login-field">
+      <label>كلمة المرور</label>
+      <input type="password" id="loginPass" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">🚀 دخول</button>
+    <div class="login-error" id="loginError">❌ اسم المستخدم أو كلمة المرور غير صحيحة</div>
+  </div>
+</div>
+
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">🌱</div>
+    جمعية نور
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">الرئيسية</div>
+    <div class="sidebar-item active" onclick="showView('dashboard', this)">
+      <span class="icon">📊</span> لوحة المتابعة
+    </div>
+    <div class="sidebar-section">التسجيلات</div>
+    <div class="sidebar-item" onclick="showView('registrations', this)">
+      <span class="icon">📋</span> قائمة المسجلين
+      <span class="sidebar-badge" id="pendingBadge">0</span>
+    </div>
+    <div class="sidebar-item" onclick="showView('confirmed', this)">
+      <span class="icon">✅</span> مؤكدون
+    </div>
+    <div class="sidebar-item" onclick="showView('waitlist', this)">
+      <span class="icon">⏳</span> قائمة الانتظار
+    </div>
+    <div class="sidebar-section">أخرى</div>
+    <div class="sidebar-item" onclick="showView('stats', this)">
+      <span class="icon">📈</span> الإحصائيات
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="index.html">🌐 الموقع الرئيسي</a>
+    <a href="#" onclick="logout()" style="margin-top:4px;">🚪 تسجيل الخروج</a>
+  </div>
+</aside>
+
+
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="viewTitle">لوحة المتابعة</span>
+    <div class="topbar-actions">
+      <div class="topbar-search">
+        <span>🔍</span>
+        <input type="text" placeholder="بحث..." id="searchInput" oninput="filterTable()">
+      </div>
+      <div class="avatar">أ</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e8f5ee;">👶</div>
+          <div><div class="stat-num" id="statTotal">0</div><div class="stat-label">إجمالي المسجلين</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#fef3c7;">⏳</div>
+          <div><div class="stat-num" id="statPending">0</div><div class="stat-label">في الانتظار</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e8f5ee;">✅</div>
+          <div><div class="stat-num" id="statConfirmed">0</div><div class="stat-label">مؤكدون</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e3f2fd;">📅</div>
+          <div><div class="stat-num" id="statToday">0</div><div class="stat-label">تسجيلات اليوم</div></div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+        <div class="table-card">
+          <div class="table-header"><h3>📅 آخر التسجيلات</h3></div>
+          <div id="recentList" style="padding:0.5rem 0;"></div>
+        </div>
+        <div class="table-card">
+          <div class="table-header"><h3>📊 توزيع أنواع الإصابة</h3></div>
+          <div id="typeChart" style="padding:1rem;"></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><h3>📊 توزيع الحالات حسب المدينة</h3></div>
+        <div id="cityChart" style="padding:1rem;"></div>
+      </div>
+    </div>
+
+    <!-- ALL REGISTRATIONS -->
+    <div class="view" id="view-registrations">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>📋 جميع المسجلين</h3>
+          <div class="table-filters">
+            <select class="filter-select" id="statusFilter" onchange="filterTable()">
+              <option value="">كل الحالات</option>
+              <option value="pending">في الانتظار</option>
+              <option value="confirmed">مؤكد</option>
+              <option value="waitlist">قائمة انتظار</option>
+              <option value="cancelled">ملغى</option>
+            </select>
+            <select class="filter-select" id="typeFilter" onchange="filterTable()">
+              <option value="">كل الأنواع</option>
+              <option value="خفيف">درجة أولى</option>
+              <option value="معتدل">درجة ثانية</option>
+              <option value="شديد">درجة ثالثة</option>
+              <option value="أسبرجر">أسبرجر</option>
+            </select>
+            <button class="btn-export" onclick="exportCSV()">📥 تصدير CSV</button>
+            <button class="btn-add" onclick="openAddModal()">➕ إضافة تسجيل</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>الطفل</th><th>ولي الأمر</th><th>المدينة</th>
+                <th>نوع الإصابة</th><th>الحالة</th><th>تاريخ التسجيل</th><th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="regTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span id="paginationInfo">عرض 0 من 0</span>
+          <div class="page-btns" id="pageButtons"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIRMED -->
+    <div class="view" id="view-confirmed">
+      <div class="table-card">
+        <div class="table-header"><h3>✅ المسجلون المؤكدون</h3></div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>#</th><th>الطفل</th><th>ولي الأمر</th><th>الهاتف</th><th>نوع الإصابة</th><th>تاريخ التسجيل</th><th>إجراءات</th></tr></thead>
+            <tbody id="confirmedTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- WAITLIST -->
+    <div class="view" id="view-waitlist">
+      <div class="table-card">
+        <div class="table-header"><h3>⏳ قائمة الانتظار</h3></div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>#</th><th>الطفل</th><th>ولي الأمر</th><th>الهاتف</th><th>نوع الإصابة</th><th>تاريخ التسجيل</th><th>إجراءات</th></tr></thead>
+            <tbody id="waitlistTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="view" id="view-stats">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="table-card"><div class="table-header"><h3>📊 الإصابات حسب النوع</h3></div><div id="statsTypeChart" style="padding:1.2rem;"></div></div>
+        <div class="table-card"><div class="table-header"><h3>🏙 التوزيع الجغرافي</h3></div><div id="statsCityChart" style="padding:1.2rem;"></div></div>
+        <div class="table-card"><div class="table-header"><h3>📋 الحالات حسب الحالة</h3></div><div id="statsStatusChart" style="padding:1.2rem;"></div></div>
+        <div class="table-card"><div class="table-header"><h3>👦👧 التوزيع حسب الجنس</h3></div><div id="statsGenderChart" style="padding:1.2rem;"></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <h3 id="drawerTitle">تفاصيل التسجيل</h3>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>➕ إضافة تسجيل جديد</h3>
+      <button class="modal-close-btn" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-sep">👤 معلومات ولي الأمر</div>
+        <div class="fg"><label>الاسم الكامل <span>*</span></label><input id="f_parentName" placeholder="أحمد بن علي"></div>
+        <div class="fg"><label>رقم الهاتف <span>*</span></label><input id="f_parentPhone" placeholder="+213 6XX XX XX XX"></div>
+        <div class="fg"><label>البريد الإلكتروني</label><input id="f_parentEmail" type="email"></div>
+        <div class="fg"><label>المدينة <span>*</span></label>
+          <select id="f_parentCity">
+            <option value="">اختر</option>
+            <option>تلمسان</option><option>وهران</option><option>سيدي بلعباس</option>
+            <option>مستغانم</option><option>الجزائر</option><option>قسنطينة</option><option>أخرى</option>
+          </select>
+        </div>
+        <div class="form-sep">👶 معلومات الطفل</div>
+        <div class="fg"><label>اسم الطفل <span>*</span></label><input id="f_childName" placeholder="الاسم الكامل"></div>
+        <div class="fg"><label>تاريخ الميلاد <span>*</span></label><input id="f_childDob" type="date"></div>
+        <div class="fg"><label>الجنس</label>
+          <select id="f_childGender"><option value="">اختر</option><option>ذكر</option><option>أنثى</option></select>
+        </div>
+        <div class="fg"><label>الحالة</label>
+          <select id="f_status">
+            <option value="pending">في الانتظار</option>
+            <option value="confirmed">مؤكد</option>
+            <option value="waitlist">قائمة انتظار</option>
+          </select>
+        </div>
+        <div class="form-sep">🩺 الإصابة</div>
+        <div class="fg full"><label>نوع الاضطراب</label>
+          <select id="f_autismType">
+            <option value="">غير محدد</option>
+            <option>التوحد الكلاسيكي – الدرجة الأولى (خفيف)</option>
+            <option>التوحد الكلاسيكي – الدرجة الثانية (معتدل)</option>
+            <option>التوحد الكلاسيكي – الدرجة الثالثة (شديد)</option>
+            <option>متلازمة أسبرجر</option>
+            <option>اضطراب النمو الشامل غير المحدد PDD-NOS</option>
+            <option>متلازمة ريت</option>
+          </select>
+        </div>
+        <div class="fg full"><label>ملاحظات</label><textarea id="f_desc" placeholder="أي معلومات إضافية..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel-modal" onclick="closeAddModal()">إلغاء</button>
+      <button class="btn-save" onclick="saveNewReg()">💾 حفظ التسجيل</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== AUTH ==========
+function doLogin() {
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  if (u === 'khaled' && p === 'khaled123') {
+    document.getElementById('loginScreen').style.display = 'none';
+    initApp();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+function logout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+// ========== DATA ==========
+let registrations = [];
+let currentPage = 1;
+const pageSize = 8;
+let currentView = 'dashboard';
+
+// ✅ FIX: Read ONLY from localStorage — no sampleData that was causing the crash
+function initApp() {
+  const saved = localStorage.getItem('registrations');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      registrations = parsed.map((r, i) => ({
+        ...r,
+        id: r.id || Date.now() + i
+      }));
+    } catch(e) {
+      registrations = [];
+    }
+  } else {
+    registrations = [];
+  }
+  renderAll();
+}
+
+function save() {
+  localStorage.setItem('registrations', JSON.stringify(registrations));
+}
+
+// ========== NAV ==========
+function showView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  currentView = name;
+  const titles = { dashboard:'لوحة المتابعة', registrations:'قائمة المسجلين', confirmed:'المؤكدون', waitlist:'قائمة الانتظار', stats:'الإحصائيات' };
+  document.getElementById('viewTitle').textContent = titles[name] || '';
+  renderAll();
+}
+
+// ========== RENDER ==========
+function renderAll() {
+  updateStats();
+  renderDashboard();
+  renderTable();
+  renderConfirmed();
+  renderWaitlist();
+  renderStatsView();
+  document.getElementById('pendingBadge').textContent = registrations.filter(r => r.status === 'pending').length;
+}
+
+function updateStats() {
+  const today = new Date().toDateString();
+  document.getElementById('statTotal').textContent = registrations.length;
+  document.getElementById('statPending').textContent = registrations.filter(r => r.status === 'pending').length;
+  document.getElementById('statConfirmed').textContent = registrations.filter(r => r.status === 'confirmed').length;
+  document.getElementById('statToday').textContent = registrations.filter(r => new Date(r.date).toDateString() === today).length;
+}
+
+function statusBadge(s) {
+  const map = { pending:['badge-pending','⏳ في الانتظار'], confirmed:['badge-confirmed','✅ مؤكد'], waitlist:['badge-waitlist','🔵 انتظار'], cancelled:['badge-cancelled','❌ ملغى'] };
+  const [cls, label] = map[s] || ['badge-pending', s];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function typeBadge(t) {
+  if (!t) return '<span style="color:#aaa;font-size:12px;">—</span>';
+  let cls = 'badge-type-other';
+  if (t.includes('خفيف') || t.includes('أسبرجر')) cls = 'badge-type-1';
+  else if (t.includes('معتدل') || t.includes('PDD')) cls = 'badge-type-2';
+  else if (t.includes('شديد') || t.includes('ريت')) cls = 'badge-type-3';
+  const short = t.replace('التوحد الكلاسيكي – ','').replace(' (خفيف)','').replace(' (معتدل)','').replace(' (شديد)','').replace('اضطراب النمو الشامل غير المحدد','PDD-NOS');
+  return `<span class="badge ${cls}" title="${t}">${short.length > 18 ? short.substring(0,18)+'…' : short}</span>`;
+}
+
+function avatarColors(name) {
+  const colors = [['#e8f5e9','#2e7d32'],['#e3f2fd','#1565c0'],['#fff3e0','#e65100'],['#f3e5f5','#6a1b9a'],['#fce4ec','#880e4f']];
+  return colors[(name.charCodeAt(0) || 0) % colors.length];
+}
+
+function renderDashboard() {
+  const recent = [...registrations].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0,5);
+  if (recent.length === 0) {
+    document.getElementById('recentList').innerHTML = '<div class="empty-state"><span class="emoji">📭</span><p>لا توجد تسجيلات بعد</p></div>';
+  } else {
+    document.getElementById('recentList').innerHTML = recent.map(r => {
+      const [bg,fg] = avatarColors(r.childName);
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f5f2;cursor:pointer;" onclick="openDrawer(${r.id})">
+        <div class="avatar-sm" style="background:${bg};color:${fg};">${r.childName[0]}</div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14px;">${r.childName}</div><div style="font-size:12px;color:#5a7260;">${r.parentName} · ${r.parentCity||''}</div></div>
+        ${statusBadge(r.status)}
+      </div>`;
+    }).join('');
+  }
+  renderBarChart('typeChart', getTypeCounts());
+  renderBarChart('cityChart', getCityCounts());
+}
+
+function getTypeCounts() {
+  const counts = {};
+  registrations.forEach(r => {
+    const t = (r.autismType||'غير محدد').replace('التوحد الكلاسيكي – ','').replace(' (خفيف)','').replace(' (معتدل)','').replace(' (شديد)','').replace('اضطراب النمو الشامل غير المحدد','PDD-NOS');
+    counts[t] = (counts[t] || 0) + 1;
+  });
+  return counts;
+}
+
+function getCityCounts() {
+  const counts = {};
+  registrations.forEach(r => { const c = r.parentCity || 'أخرى'; counts[c] = (counts[c]||0)+1; });
+  return counts;
+}
+
+function renderBarChart(id, counts) {
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if (entries.length === 0) {
+    document.getElementById(id).innerHTML = '<div style="color:#aaa;font-size:13px;text-align:center;padding:1rem;">لا توجد بيانات</div>';
+    return;
+  }
+  const max = Math.max(...entries.map(e=>e[1]), 1);
+  document.getElementById(id).innerHTML = entries.map(([label,val]) =>
+    `<div class="chart-bar-row">
+      <div class="chart-bar-label">${label.length>16?label.substring(0,16)+'…':label}</div>
+      <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round(val/max*100)}%"></div></div>
+      <div class="chart-bar-val">${val}</div>
+    </div>`
+  ).join('');
+}
+
+function getFilteredRegs() {
+  const search = (document.getElementById('searchInput').value||'').toLowerCase();
+  const statusF = (document.getElementById('statusFilter')||{}).value || '';
+  const typeF = (document.getElementById('typeFilter')||{}).value || '';
+  return registrations.filter(r => {
+    const matchSearch = !search || r.childName.toLowerCase().includes(search) || r.parentName.toLowerCase().includes(search) || (r.parentPhone||'').includes(search) || (r.parentCity||'').toLowerCase().includes(search);
+    const matchStatus = !statusF || r.status === statusF;
+    const matchType = !typeF || (r.autismType||'').includes(typeF);
+    return matchSearch && matchStatus && matchType;
+  });
+}
+
+function renderTable() {
+  const filtered = getFilteredRegs();
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total/pageSize));
+  currentPage = Math.min(currentPage, totalPages);
+  const paged = filtered.slice((currentPage-1)*pageSize, currentPage*pageSize);
+
+  document.getElementById('paginationInfo').textContent = `عرض ${paged.length} من ${total}`;
+  let pageBtns = '';
+  for (let i=1;i<=totalPages;i++) pageBtns += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  document.getElementById('pageButtons').innerHTML = pageBtns;
+
+  if (paged.length === 0) {
+    document.getElementById('regTableBody').innerHTML = `<tr><td colspan="8"><div class="empty-state"><span class="emoji">📭</span><p>لا توجد تسجيلات</p></div></td></tr>`;
+    return;
+  }
+
+  document.getElementById('regTableBody').innerHTML = paged.map((r,i) => {
+    const [bg,fg] = avatarColors(r.childName);
+    return `<tr onclick="openDrawer(${r.id})">
+      <td style="color:#aaa;font-size:13px;">${(currentPage-1)*pageSize+i+1}</td>
+      <td><div class="td-name"><div class="avatar-sm" style="background:${bg};color:${fg};">${r.childName[0]}</div><div class="td-name-text"><strong>${r.childName}</strong><span>${r.age||''} · ${r.childGender||''}</span></div></div></td>
+      <td><div class="td-name-text"><strong>${r.parentName}</strong><span>${r.parentPhone}</span></div></td>
+      <td>${r.parentCity||'—'}</td>
+      <td>${typeBadge(r.autismType)}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td style="font-size:13px;color:#5a7260;">${new Date(r.date).toLocaleDateString('ar-DZ')}</td>
+      <td onclick="event.stopPropagation()"><div class="action-btns">
+        <button class="btn-icon wa" title="واتساب" onclick="sendWA('${r.parentPhone}','${r.childName}')">💬</button>
+        <button class="btn-icon success" title="تأكيد" onclick="setStatus(${r.id},'confirmed')">✅</button>
+        <button class="btn-icon" title="انتظار" onclick="setStatus(${r.id},'waitlist')">⏳</button>
+        <button class="btn-icon danger" title="حذف" onclick="deleteReg(${r.id})">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderConfirmed() {
+  const list = registrations.filter(r => r.status === 'confirmed');
+  document.getElementById('confirmedTableBody').innerHTML = list.length === 0
+    ? `<tr><td colspan="7"><div class="empty-state"><span class="emoji">✅</span><p>لا يوجد مؤكدون بعد</p></div></td></tr>`
+    : list.map((r,i) => {
+      const [bg,fg] = avatarColors(r.childName);
+      return `<tr onclick="openDrawer(${r.id})">
+        <td style="color:#aaa;font-size:13px;">${i+1}</td>
+        <td><div class="td-name"><div class="avatar-sm" style="background:${bg};color:${fg};">${r.childName[0]}</div><div class="td-name-text"><strong>${r.childName}</strong><span>${r.age||''}</span></div></div></td>
+        <td>${r.parentName}</td><td style="font-size:13px;">${r.parentPhone}</td>
+        <td>${typeBadge(r.autismType)}</td>
+        <td style="font-size:13px;color:#5a7260;">${new Date(r.date).toLocaleDateString('ar-DZ')}</td>
+        <td onclick="event.stopPropagation()"><div class="action-btns">
+          <button class="btn-icon wa" onclick="sendWA('${r.parentPhone}','${r.childName}')">💬</button>
+          <button class="btn-icon danger" onclick="setStatus(${r.id},'cancelled')">❌</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+}
+
+function renderWaitlist() {
+  const list = registrations.filter(r => r.status === 'waitlist');
+  document.getElementById('waitlistTableBody').innerHTML = list.length === 0
+    ? `<tr><td colspan="7"><div class="empty-state"><span class="emoji">⏳</span><p>قائمة الانتظار فارغة</p></div></td></tr>`
+    : list.map((r,i) => {
+      const [bg,fg] = avatarColors(r.childName);
+      return `<tr onclick="openDrawer(${r.id})">
+        <td style="color:#aaa;font-size:13px;">${i+1}</td>
+        <td><div class="td-name"><div class="avatar-sm" style="background:${bg};color:${fg};">${r.childName[0]}</div><div class="td-name-text"><strong>${r.childName}</strong><span>${r.age||''}</span></div></div></td>
+        <td>${r.parentName}</td><td style="font-size:13px;">${r.parentPhone}</td>
+        <td>${typeBadge(r.autismType)}</td>
+        <td style="font-size:13px;color:#5a7260;">${new Date(r.date).toLocaleDateString('ar-DZ')}</td>
+        <td onclick="event.stopPropagation()"><div class="action-btns">
+          <button class="btn-icon success" onclick="setStatus(${r.id},'confirmed')">✅</button>
+          <button class="btn-icon wa" onclick="sendWA('${r.parentPhone}','${r.childName}')">💬</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+}
+
+function renderStatsView() {
+  renderBarChart('statsTypeChart', getTypeCounts());
+  renderBarChart('statsCityChart', getCityCounts());
+  const sc = {'في الانتظار':0,'مؤكد':0,'قائمة انتظار':0,'ملغى':0};
+  registrations.forEach(r => { const m={pending:'في الانتظار',confirmed:'مؤكد',waitlist:'قائمة انتظار',cancelled:'ملغى'}; sc[m[r.status]||r.status]=(sc[m[r.status]||r.status]||0)+1; });
+  renderBarChart('statsStatusChart', sc);
+  const gc = {};
+  registrations.forEach(r => { const g=r.childGender||'غير محدد'; gc[g]=(gc[g]||0)+1; });
+  renderBarChart('statsGenderChart', gc);
+}
+
+// ========== DRAWER ==========
+function openDrawer(id) {
+  const r = registrations.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('drawerTitle').textContent = `📋 ${r.childName}`;
+  const diagMap = { yes:'✅ تم التشخيص رسمياً', suspected:'🔍 مشتبه به', no:'⚠️ لم يُشخَّص بعد' };
+  const [bg,fg] = avatarColors(r.childName);
+  document.getElementById('drawerBody').innerHTML = `
+    <div style="text-align:center;padding:1rem 0 1.5rem;">
+      <div class="avatar-sm" style="width:56px;height:56px;font-size:22px;margin:0 auto;background:${bg};color:${fg};">${r.childName[0]}</div>
+      <div style="font-size:17px;font-weight:800;margin-top:10px;">${r.childName}</div>
+      <div style="font-size:13px;color:#5a7260;margin-top:4px;">${r.age||''} · ${r.childGender||''}</div>
+      <div style="margin-top:10px;">${statusBadge(r.status)}</div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">👤 ولي الأمر</div>
+      <div class="drawer-row"><span class="key">الاسم</span><span class="val">${r.parentName}</span></div>
+      <div class="drawer-row"><span class="key">الهاتف</span><span class="val" style="direction:ltr;">${r.parentPhone}</span></div>
+      ${r.parentEmail?`<div class="drawer-row"><span class="key">البريد</span><span class="val">${r.parentEmail}</span></div>`:''}
+      <div class="drawer-row"><span class="key">المدينة</span><span class="val">${r.parentCity||'—'}</span></div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">🩺 الإصابة</div>
+      <div class="drawer-row"><span class="key">التشخيص</span><span class="val">${diagMap[r.diagnosed]||r.diagnosed||'—'}</span></div>
+      <div class="drawer-row"><span class="key">النوع</span><span class="val" style="font-size:13px;">${r.autismType||'غير محدد'}</span></div>
+    </div>
+    ${r.description?`<div class="drawer-section"><div class="drawer-section-title">📝 ملاحظات</div><div style="font-size:14px;color:#3a4a3a;line-height:1.8;background:#f7f9f7;padding:10px;border-radius:8px;">${r.description}</div></div>`:''}
+    <div class="drawer-section">
+      <div class="drawer-section-title">📅 تسجيل</div>
+      <div class="drawer-row"><span class="key">التاريخ</span><span class="val">${new Date(r.date).toLocaleDateString('ar-DZ')}</span></div>
+    </div>
+    <div class="drawer-actions">
+      <button class="drawer-btn confirm" onclick="setStatus(${r.id},'confirmed');closeDrawer()">✅ تأكيد</button>
+      <button class="drawer-btn waitlist" onclick="setStatus(${r.id},'waitlist');closeDrawer()">⏳ انتظار</button>
+      <button class="drawer-btn wa" onclick="sendWA('${r.parentPhone}','${r.childName}')">💬 واتساب</button>
+    </div>
+    <div style="margin-top:8px;">
+      <button class="drawer-btn cancel" style="width:100%;" onclick="deleteReg(${r.id});closeDrawer()">🗑 حذف التسجيل</button>
+    </div>`;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+// ========== ACTIONS ==========
+function setStatus(id, status) {
+  const r = registrations.find(x => x.id === id);
+  if (r) { r.status = status; save(); renderAll(); showToast('تم تحديث الحالة', 'success'); }
+}
+function deleteReg(id) {
+  if (!confirm('هل تريد حذف هذا التسجيل نهائياً؟')) return;
+  registrations = registrations.filter(x => x.id !== id);
+  save(); renderAll(); showToast('تم حذف التسجيل', 'error');
+}
+function sendWA(phone, name) {
+  const clean = (phone||'').replace(/\s/g,'').replace('+','');
+  const msg = encodeURIComponent(`السلام عليكم،\nنتواصل معكم من جمعية نور بخصوص تسجيل الطفل ${name}.\nيرجى تحديد موعد للتقييم الأولي.\nشكراً.`);
+  window.open(`https://wa.me/${clean}?text=${msg}`, '_blank');
+}
+function goPage(p) { currentPage = p; renderTable(); }
+function filterTable() { currentPage = 1; renderTable(); }
+
+// ========== ADD MODAL ==========
+function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('open');
+  ['f_parentName','f_parentPhone','f_parentEmail','f_childName','f_childDob','f_desc'].forEach(id => document.getElementById(id).value='');
+  ['f_parentCity','f_childGender','f_autismType','f_status'].forEach(id => document.getElementById(id).selectedIndex=0);
+}
+function saveNewReg() {
+  const parentName = document.getElementById('f_parentName').value.trim();
+  const parentPhone = document.getElementById('f_parentPhone').value.trim();
+  const childName = document.getElementById('f_childName').value.trim();
+  const childDob = document.getElementById('f_childDob').value;
+  if (!parentName || !parentPhone || !childName) { showToast('يرجى ملء الحقول الإلزامية', 'error'); return; }
+  const birth = childDob ? new Date(childDob) : null;
+  const age = birth ? (new Date().getFullYear()-birth.getFullYear()===0 ? 'أقل من سنة' : `${new Date().getFullYear()-birth.getFullYear()} سنة`) : '';
+  registrations.unshift({
+    id: Date.now(),
+    parentName, parentPhone,
+    parentCity: document.getElementById('f_parentCity').value,
+    parentEmail: document.getElementById('f_parentEmail').value.trim(),
+    childName, childDob, age,
+    childGender: document.getElementById('f_childGender').value,
+    diagnosed: 'yes',
+    autismType: document.getElementById('f_autismType').value,
+    description: document.getElementById('f_desc').value.trim(),
+    status: document.getElementById('f_status').value,
+    date: new Date().toISOString()
+  });
+  save(); renderAll(); closeAddModal(); showToast('✅ تم إضافة التسجيل بنجاح', 'success');
+}
+
+// ========== EXPORT ==========
+function exportCSV() {
+  const headers = ['رقم','اسم الطفل','العمر','الجنس','اسم ولي الأمر','الهاتف','المدينة','نوع الاضطراب','الحالة','تاريخ التسجيل'];
+  const rows = registrations.map((r,i) => [
+    i+1, r.childName, r.age||'', r.childGender||'',
+    r.parentName, r.parentPhone, r.parentCity||'',
+    r.autismType||'غير محدد',
+    {pending:'في الانتظار',confirmed:'مؤكد',waitlist:'قائمة انتظار',cancelled:'ملغى'}[r.status]||r.status,
+    new Date(r.date).toLocaleDateString('ar-DZ')
+  ]);
+  const csv = '\uFEFF' + [headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download = `تسجيلات_جمعية_نور_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  showToast('📥 تم تصدير الملف', 'success');
+}
+
+// ========== TOAST ==========
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
