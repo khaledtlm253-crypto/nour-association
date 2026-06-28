@@ -759,10 +759,15 @@
     transform: translateY(-2px);
   }
 
-  @media (max-width: 768px) {
+ @media (max-width: 768px) {
     .about-grid, .contact-grid, .footer-inner { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea { font-size: 16px; padding: 13px 14px; }
+    .form-container { padding: 1.2rem; border-radius: 16px; }
     .hero { padding: 60px 1.5rem 50px; }
     .nav-links { display: none; }
     section { padding: 50px 1.2rem; }
-  }
+}

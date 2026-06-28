@@ -7,10 +7,126 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+/* MULTI-STEP FORM */
+.step { display: none; }
+.step.active { display: block; }
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+}
+.step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e0eae0;
+  color: #5a7260;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 1;
+}
+.step-dot.active {
+  background: var(--primary, #1a6b4a);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(26,107,74,0.15);
+}
+.step-dot.done {
+  background: #4caf50;
+  color: white;
+}
+.step-line {
+  height: 3px;
+  width: 60px;
+  background: #e0eae0;
+  transition: background 0.3s;
+}
+.step-line.done { background: #4caf50; }
+
+.step-label {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a7260;
+  margin-top: 6px;
+}
+.step-label.active { color: var(--primary, #1a6b4a); }
+
+.step-indicator-wrap {
+  margin-bottom: 2rem;
+}
+.step-dots-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.step-labels-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  margin-top: 6px;
+}
+
+.form-nav {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.btn-next {
+  background: var(--primary, #1a6b4a);
+  color: white;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Tajawal', sans-serif;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.25s;
+}
+.btn-next:hover { background: #0d4a32; transform: translateY(-1px); }
+.btn-prev {
+  background: #f0f5f0;
+  color: #3a4a3a;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Tajawal', sans-serif;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.25s;
+}
+.btn-prev:hover { background: #e0eae0; }
+
+.step-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary, #1a6b4a);
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eef6f1;
+}
+</style>
 </head>
 <body>
-
-
+<script type="module">
+  import { inject } from '/node_modules/@vercel/analytics/dist/analytics.js';
+  inject();
+</script>
 <nav>
   <a href="#" class="nav-logo">
     <div class="nav-logo-icon">🌱</div>
@@ -25,7 +141,6 @@
     <li><a href="#inscription" class="nav-cta">سجّل طفلك</a></li>
   </ul>
 </nav>
-
 
 <div class="hero">
   <div class="hero-badge">🌟 جمعية معتمدة من وزارة التضامن الاجتماعي</div>
@@ -87,49 +202,42 @@
     <p>التوحد ليس مرضاً واحداً بل هو طيف متعدد الأشكال والدرجات. التعرف المبكر هو مفتاح النجاح.</p>
   </div>
   <div class="types-grid">
-
     <div class="type-card">
       <div class="type-card-icon" style="background:#e8f5e9;">🌿</div>
       <h3>متلازمة أسبرجر</h3>
-      <p>الأطفال المصابون بها يمتلكون ذكاءً طبيعياً أو فوق المتوسط، لكنهم يعانون من صعوبات في التفاعل الاجتماعي والتواصل غير اللفظي. كثيراً ما يُظهرون اهتماماً شديداً بمجال محدد.</p>
+      <p>الأطفال المصابون بها يمتلكون ذكاءً طبيعياً أو فوق المتوسط، لكنهم يعانون من صعوبات في التفاعل الاجتماعي والتواصل غير اللفظي.</p>
       <span class="tag-level" style="background:#e8f5e9; color:#2e7d32;">🟢 الدرجة الأولى (خفيف)</span>
     </div>
-
     <div class="type-card">
       <div class="type-card-icon" style="background:#fff3e0;">🌤</div>
       <h3>اضطراب التوحد الكلاسيكي</h3>
-      <p>يُميَّز بتأخر في تطور اللغة والتواصل الاجتماعي، مع أنماط سلوكية متكررة. يظهر عادةً قبل سن الثلاث سنوات ويحتاج إلى دعم معتدل.</p>
+      <p>يُميَّز بتأخر في تطور اللغة والتواصل الاجتماعي، مع أنماط سلوكية متكررة. يظهر عادةً قبل سن الثلاث سنوات.</p>
       <span class="tag-level" style="background:#fff3e0; color:#e65100;">🟠 الدرجة الثانية (معتدل)</span>
     </div>
-
     <div class="type-card">
       <div class="type-card-icon" style="background:#fce4ec;">🌸</div>
       <h3>اضطراب التوحد الشديد</h3>
-      <p>يحتاج الأطفال في هذه الفئة إلى دعم مستمر وكثيف. قد يغيب الكلام كلياً ويكون السلوك الحسي مكثفاً. البرامج المكثفة تحقق تقدماً ملحوظاً.</p>
+      <p>يحتاج الأطفال في هذه الفئة إلى دعم مستمر وكثيف. قد يغيب الكلام كلياً ويكون السلوك الحسي مكثفاً.</p>
       <span class="tag-level" style="background:#fce4ec; color:#b71c1c;">🔴 الدرجة الثالثة (شديد)</span>
     </div>
-
     <div class="type-card">
       <div class="type-card-icon" style="background:#e3f2fd;">💙</div>
       <h3>اضطراب النمو الشامل غير المحدد</h3>
-      <p>يُشخَّص عندما لا تتطابق الأعراض تماماً مع التصنيفات الأخرى. يختلف من طفل لآخر ويستوجب تقييماً فردياً دقيقاً لتحديد البرنامج المناسب.</p>
+      <p>يُشخَّص عندما لا تتطابق الأعراض تماماً مع التصنيفات الأخرى. يستوجب تقييماً فردياً دقيقاً.</p>
       <span class="tag-level" style="background:#e3f2fd; color:#0d47a1;">🔵 تقييم فردي</span>
     </div>
-
     <div class="type-card">
       <div class="type-card-icon" style="background:#f3e5f5;">🦋</div>
       <h3>متلازمة ريت</h3>
-      <p>تصيب أساساً الإناث وتتميز بتطور طبيعي في البداية ثم تراجع تدريجي في المهارات الحركية والتواصلية. تستلزم رعاية متخصصة جسدية ونفسية.</p>
+      <p>تصيب أساساً الإناث وتتميز بتطور طبيعي في البداية ثم تراجع تدريجي في المهارات الحركية والتواصلية.</p>
       <span class="tag-level" style="background:#f3e5f5; color:#6a1b9a;">🟣 تشخيص خاص</span>
     </div>
-
     <div class="type-card">
       <div class="type-card-icon" style="background:#e8eaf6;">🧠</div>
       <h3>اضطراب الطفولة التفككي</h3>
-      <p>نادر جداً، يتميز بتطور طبيعي حتى سن 3-4 سنوات ثم فقدان مفاجئ للمهارات المكتسبة. يستوجب متابعة مكثفة وتدخلاً علاجياً سريعاً.</p>
+      <p>نادر جداً، يتميز بتطور طبيعي حتى سن 3-4 سنوات ثم فقدان مفاجئ للمهارات المكتسبة.</p>
       <span class="tag-level" style="background:#e8eaf6; color:#283593;">🔷 نادر ومتخصص</span>
     </div>
-
   </div>
 </section>
 </div>
@@ -184,42 +292,54 @@
         <p>استخدام أحدث التطبيقات والأدوات الرقمية المخصصة لتعليم أطفال التوحد.</p>
       </div>
     </div>
-    
+  </div>
 </section>
 
-<!-- INSCRIPTION -->
+<!-- INSCRIPTION - MULTI STEP -->
 <div class="section-full section-alt" id="inscription">
 <section>
   <div class="section-header">
     <div class="section-tag">التسجيل</div>
     <h2>سجّل طفلك في جمعية نور</h2>
-    <p>املأ الاستمارة وسيتصل بك فريقنا لتحديد موعد التقييم الأولي المجاني.</p>
+    <p>املأ الاستمارة خطوة بخطوة وسيتصل بك فريقنا لتحديد موعد التقييم الأولي المجاني.</p>
   </div>
 
   <div class="form-container">
     <div class="form-title">📋 استمارة تسجيل الطفل</div>
     <div class="form-subtitle">⚡ ستصلنا معلوماتك مباشرة على واتساب وسيتم التواصل معكم خلال 24 ساعة</div>
 
-    <form id="registrationForm">
-      <div class="form-grid">
-        <!-- PARENT INFO -->
-        <div class="form-section-title">👤 معلومات ولي الأمر</div>
+    <!-- STEP INDICATOR -->
+    <div class="step-indicator-wrap">
+      <div class="step-dots-row">
+        <div class="step-dot active" id="dot1">1</div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-dot" id="dot2">2</div>
+        <div class="step-line" id="line2"></div>
+        <div class="step-dot" id="dot3">3</div>
+      </div>
+      <div class="step-labels-row">
+        <span class="step-label active" id="label1">ولي الأمر</span>
+        <span class="step-label" id="label2">الطفل</span>
+        <span class="step-label" id="label3">الإصابة</span>
+      </div>
+    </div>
 
+    <!-- STEP 1: ولي الأمر -->
+    <div class="step active" id="step1">
+      <div class="step-title">👤 معلومات ولي الأمر</div>
+      <div class="form-grid">
         <div class="form-group">
           <label>الاسم الكامل <span>*</span></label>
-          <input type="text" id="parentName" placeholder="" required>
+          <input type="text" id="parentName" placeholder="أحمد بن علي" required>
         </div>
-
         <div class="form-group">
           <label>رقم الهاتف (واتساب) <span>*</span></label>
           <input type="tel" id="parentPhone" placeholder="+213 6XX XX XX XX" required>
         </div>
-
         <div class="form-group">
           <label>البريد الإلكتروني</label>
           <input type="email" id="parentEmail" placeholder="">
         </div>
-
         <div class="form-group">
           <label>المدينة <span>*</span></label>
           <select id="parentCity" required>
@@ -234,21 +354,36 @@
             <option>أخرى</option>
           </select>
         </div>
+        <div class="form-group full">
+          <label>كيف عرفتم عن جمعيتنا؟</label>
+          <select id="referral">
+            <option value="">اختر</option>
+            <option>طبيب أو أخصائي</option>
+            <option>أسرة أخرى</option>
+            <option>وسائل التواصل الاجتماعي</option>
+            <option>محرك البحث (Google)</option>
+            <option>أخرى</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="btn-next" onclick="goStep(2)">التالي ← معلومات الطفل</button>
+      </div>
+    </div>
 
-        <!-- CHILD INFO -->
-        <div class="form-section-title">👶 معلومات الطفل</div>
-
+    <!-- STEP 2: الطفل -->
+    <div class="step" id="step2">
+      <div class="step-title">👶 معلومات الطفل</div>
+      <div class="form-grid">
         <div class="form-group">
           <label>اسم و لقب الطفل <span>*</span></label>
           <input type="text" id="childName" placeholder="" required>
         </div>
-
         <div class="form-group">
           <label>تاريخ الميلاد <span>*</span></label>
           <input type="date" id="childDob" required>
         </div>
-
-        <div class="form-group">
+        <div class="form-group full">
           <label>الجنس <span>*</span></label>
           <select id="childGender" required>
             <option value="">اختر</option>
@@ -256,10 +391,25 @@
             <option>أنثى</option>
           </select>
         </div>
+        <div class="form-group full">
+          <label>هل سبق أن تلقّى الطفل تكفلاً في مؤسسة أخرى؟</label>
+          <select id="previousCare">
+            <option value="">اختر</option>
+            <option value="no">لا، للمرة الأولى</option>
+            <option value="yes">نعم</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="btn-prev" onclick="goStep(1)">→ السابق</button>
+        <button class="btn-next" onclick="goStep(3)">التالي ← نوع الإصابة</button>
+      </div>
+    </div>
 
-        <!-- INJURY TYPE -->
-        <div class="form-section-title">🩺 نوع الإصابة</div>
-
+    <!-- STEP 3: الإصابة -->
+    <div class="step" id="step3">
+      <div class="step-title">🩺 نوع الإصابة</div>
+      <div class="form-grid">
         <div class="form-group full">
           <label>هل تم التشخيص طبياً؟ <span>*</span></label>
           <select id="diagnosed" required>
@@ -269,7 +419,6 @@
             <option value="no">لا، لكنني لاحظت علامات</option>
           </select>
         </div>
-
         <div class="form-group full">
           <label>نوع اضطراب طيف التوحد (إن تم التشخيص)</label>
           <select id="autismType">
@@ -284,43 +433,20 @@
             <option>غير محدد / في انتظار التشخيص</option>
           </select>
         </div>
-
         <div class="form-group full">
           <label>وصف موجز للوضع الحالي للطفل</label>
           <textarea id="childDescription" placeholder="اذكر الأعراض الملاحظة، المهارات المكتسبة، الاحتياجات الخاصة..."></textarea>
         </div>
-
-        <div class="form-group full">
-          <label>هل سبق أن تلقّى الطفل تكفلاً في مؤسسة أخرى؟</label>
-          <select id="previousCare">
-            <option value="">اختر</option>
-            <option value="no">لا، للمرة الأولى</option>
-            <option value="yes">نعم</option>
-          </select>
-        </div>
-
-        <div class="form-group full">
-          <label>كيف عرفتم عن جمعيتنا؟</label>
-          <select id="referral">
-            <option value="">اختر</option>
-            <option>طبيب أو أخصائي</option>
-            <option>أسرة أخرى</option>
-            <option>وسائل التواصل الاجتماعي</option>
-            <option>محرك البحث (Google)</option>
-            <option>أخرى</option>
-          </select>
-        </div>
-
       </div>
-
-      <button type="button" class="submit-btn" onclick="submitForm()">
-        <span>📤 إرسال الطلب عبر واتساب</span>
-      </button>
-
-      <div class="whatsapp-note">
+      <div class="form-nav">
+        <button class="btn-prev" onclick="goStep(2)">→ السابق</button>
+        <button class="btn-next" onclick="submitForm()" style="background:#25D366;">📤 إرسال عبر واتساب</button>
+      </div>
+      <div class="whatsapp-note" style="margin-top:1rem;">
         💚 سيُرسل طلبك مباشرة إلى فريقنا على واتساب لمراجعته وتحديد موعدكم
       </div>
-    </form>
+    </div>
+
   </div>
 </section>
 </div>
@@ -364,11 +490,11 @@
       </div>
     </div>
     <div class="map-placeholder">
-     <iframe 
-  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3245.0!2d-1.3167!3d34.8825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDUyJzU3LjAiTiAxwrAxOScwMC4xIlc!5e0!3m2!1sfr!2sdz!4v1234567890"
-  width="100%" height="300" style="border:0;border-radius:16px;" 
-  allowfullscreen="" loading="lazy">
-</iframe>
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3245.0!2d-1.3167!3d34.8825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDUyJzU3LjAiTiAxwrAxOScwMC4xIlc!5e0!3m2!1sfr!2sdz!4v1234567890"
+        width="100%" height="300" style="border:0;border-radius:16px;"
+        allowfullscreen="" loading="lazy">
+      </iframe>
     </div>
   </div>
 </section>
@@ -401,7 +527,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-  © 2025 جمعية نور لرعاية أطفال التوحد – تلمسان، الجزائر
+    © 2025 جمعية نور لرعاية أطفال التوحد – تلمسان، الجزائر
   </div>
 </footer>
 
@@ -415,29 +541,82 @@
   </div>
 </div>
 
-
-
 <script>
+let currentStep = 1;
+
+function goStep(n) {
+  // Validate current step before going next
+  if (n > currentStep) {
+    if (!validateStep(currentStep)) return;
+  }
+
+  // Hide all steps
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+
+  // Update dots
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('dot' + i);
+    const label = document.getElementById('label' + i);
+    dot.classList.remove('active', 'done');
+    label.classList.remove('active');
+    if (i < n) { dot.classList.add('done'); dot.textContent = '✓'; }
+    else if (i === n) { dot.classList.add('active'); dot.textContent = i; label.classList.add('active'); }
+    else { dot.textContent = i; }
+  }
+
+  // Update lines
+  for (let i = 1; i <= 2; i++) {
+    const line = document.getElementById('line' + i);
+    line.classList.toggle('done', i < n);
+  }
+
+  currentStep = n;
+  // Scroll to form
+  document.getElementById('inscription').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function validateStep(step) {
+  if (step === 1) {
+    const name = document.getElementById('parentName').value.trim();
+    const phone = document.getElementById('parentPhone').value.trim();
+    const city = document.getElementById('parentCity').value;
+    if (!name || !phone || !city) {
+      alert('⚠️ يرجى ملء جميع الحقول الإلزامية (الاسم، الهاتف، المدينة)');
+      return false;
+    }
+  }
+  if (step === 2) {
+    const childName = document.getElementById('childName').value.trim();
+    const childDob = document.getElementById('childDob').value;
+    const childGender = document.getElementById('childGender').value;
+    if (!childName || !childDob || !childGender) {
+      alert('⚠️ يرجى ملء جميع الحقول الإلزامية (الاسم، تاريخ الميلاد، الجنس)');
+      return false;
+    }
+  }
+  return true;
+}
+
 function submitForm() {
+  const diagnosed = document.getElementById('diagnosed').value;
+  if (!diagnosed) {
+    alert('⚠️ يرجى تحديد حالة التشخيص');
+    return;
+  }
+
   const parentName = document.getElementById('parentName').value.trim();
   const parentPhone = document.getElementById('parentPhone').value.trim();
   const parentCity = document.getElementById('parentCity').value;
   const childName = document.getElementById('childName').value.trim();
   const childDob = document.getElementById('childDob').value;
   const childGender = document.getElementById('childGender').value;
-  const diagnosed = document.getElementById('diagnosed').value;
   const autismType = document.getElementById('autismType').value;
   const desc = document.getElementById('childDescription').value.trim();
-
-  if (!parentName || !parentPhone || !parentCity || !childName || !childDob || !childGender || !diagnosed) {
-    alert('⚠️ يرجى ملء جميع الحقول الإلزامية المحددة بـ *');
-    return;
-  }
-
   const age = calculateAge(childDob);
 
   const msg = `🌱 *طلب تسجيل جديد – جمعية نور*
-  
+
 👤 *معلومات ولي الأمر:*
 • الاسم: ${parentName}
 • الهاتف: ${parentPhone}
@@ -455,7 +634,7 @@ ${desc ? `• الوصف: ${desc}` : ''}
 
 📅 *تاريخ الطلب:* ${new Date().toLocaleDateString('ar-DZ')}`;
 
-  // Save to localStorage for admin
+  // Save to localStorage
   const registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
   registrations.push({
     id: Date.now(),
@@ -470,11 +649,9 @@ ${desc ? `• الوصف: ${desc}` : ''}
 
   document.getElementById('successModal').classList.add('active');
 
-  // Open WhatsApp
   setTimeout(() => {
     const waNumber = '213697210973';
-    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, '_blank');
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
   }, 1200);
 }
 
@@ -483,7 +660,6 @@ function calculateAge(dob) {
   const birth = new Date(dob);
   const now = new Date();
   const years = now.getFullYear() - birth.getFullYear();
-  const months = now.getMonth() - birth.getMonth();
   if (years === 0) return `${now.getMonth() - birth.getMonth() + (now.getFullYear() - birth.getFullYear()) * 12} أشهر`;
   return `${years} سنة`;
 }
@@ -492,14 +668,10 @@ function closeModal() {
   document.getElementById('successModal').classList.remove('active');
 }
 
-// Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
     const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
   });
 });
 </script>
